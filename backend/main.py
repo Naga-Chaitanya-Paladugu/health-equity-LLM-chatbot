@@ -123,6 +123,6 @@ def generate_sql(request: QueryRequest):
 async def serve_home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-# Run FastAPI server
+# Run the FastAPI server
 if __name__ == '__main__':
     uvicorn.run("main:app", host="127.0.0.1", port=8000)
