@@ -10,10 +10,19 @@ from backend.db_utils import connect_db, get_schema, validate_sql_query
 from backend.sql_chain import get_sql_chain
 from backend.answer_generator import get_natural_language_response
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi import Request
+
 load_dotenv()
 
 app = FastAPI()
 chat_history = []
+
+frontend_path = Path(__file__).resolve().parent.parent / "frontend"
+#app.mount("/static", StaticFiles(directory=frontend_path / "static"), name="static")
+templates = Jinja2Templates(directory=str(frontend_path / "templates"))
 
 # Load API Key
 groq_api_key = os.getenv("GROQ_API_KEY")
@@ -109,6 +118,10 @@ def generate_sql(request: QueryRequest):
 
     except Exception as e:
         return {"error": f"Unhandled Server Error: {str(e)}"}
+
+@app.get("/", response_class=HTMLResponse)
+async def serve_home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 # Run FastAPI server
 if __name__ == '__main__':
